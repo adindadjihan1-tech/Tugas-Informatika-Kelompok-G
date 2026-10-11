@@ -1,0 +1,150 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm> // Untuk std::min
+
+using namespace std;
+
+// ==========================================
+// 1. PENCARIAN LINIER (Linear Search)
+// ==========================================
+int linearSearch(const vector<int>& arr, int target) {
+    cout << "--- Memulai Pencarian Linier ---" << endl;
+    cout << "Mencari angka " << target << " pada data: ";
+    for (int val : arr) cout << val << " ";
+    cout << "\n\n";
+
+    for (int i = 0; i < arr.size(); i++) {
+        cout << "Langkah " << i + 1 << ": Bandingkan " << arr[i] << " -> ";
+        if (arr[i] == target) {
+            cout << "DITEMUKAN!" << endl;
+            return i; // Mengembalikan indeks
+        } else {
+            cout << "bukan." << endl;
+        }
+    }
+    return -1; // Tidak ditemukan
+}
+
+// ==========================================
+// 2. PENCARIAN BINER (Binary Search)
+// ==========================================
+int binarySearch(const vector<int>& arr, int target) {
+    cout << "\n--- Memulai Pencarian Biner ---" << endl;
+    cout << "Mencari angka " << target << " pada data terurut: ";
+    for (int val : arr) cout << val << " ";
+    cout << "\n\n";
+
+    int left = 0;
+    int right = arr.size() - 1;
+    int step = 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        cout << "Langkah " << step << ": Cek elemen tengah (indeks " << mid << ", nilai " << arr[mid] << ") -> ";
+        
+        if (arr[mid] == target) {
+            cout << "DITEMUKAN!" << endl;
+            return mid;
+        } else if (arr[mid] < target) {
+            cout << "terlalu kecil, buang bagian kiri." << endl;
+            left = mid + 1;
+        } else {
+            cout << "terlalu besar, buang bagian kanan." << endl;
+            right = mid - 1;
+        }
+        step++;
+    }
+    return -1;
+}
+
+// ==========================================
+// 3. PENCARIAN LOMPAT (Jump Search)
+// ==========================================
+int jumpSearch(const vector<int>& arr, int target, int jumpSize) {
+    cout << "\n--- Memulai Pencarian Lompat ---" << endl;
+    cout << "Mencari angka " << target << " dengan langkah (jump) = " << jumpSize << endl;
+    cout << "Data terurut: ";
+    for (int val : arr) cout << val << " ";
+    cout << "\n\n";
+
+    int n = arr.size();
+    int prev = 0;
+    int curr = jumpSize;
+
+    // Fase Melompat (Jumping Phase)
+    while (arr[min(curr, n) - 1] < target) {
+        cout << "Lompat ke indeks " << min(curr, n) - 1 << " (nilai " << arr[min(curr, n) - 1] << ") -> masih kurang dari " << target << "." << endl;
+        prev = curr;
+        curr += jumpSize;
+        if (prev >= n) {
+            return -1; // Melebihi batas array
+        }
+    }
+
+    cout << "Berhenti melompat. Blok yang dicurigai ada di indeks " << prev << " hingga " << min(curr, n) - 1 << "." << endl;
+    cout << "Melakukan pencarian linier di dalam blok tersebut...\n" << endl;
+
+    // Fase Pencarian Linier (Linear Search Phase)
+    while (arr[prev] < target) {
+        cout << "Cek indeks " << prev << " (nilai " << arr[prev] << ") -> bukan." << endl;
+        prev++;
+        if (prev == min(curr, n)) {
+            return -1; // Tidak ditemukan di blok ini
+        }
+    }
+
+    if (arr[prev] == target) {
+        cout << "Cek indeks " << prev << " (nilai " << arr[prev] << ") -> DITEMUKAN!" << endl;
+        return prev;
+    }
+
+    return -1;
+}
+
+// ==========================================
+// FUNGSI UTAMA (MAIN)
+// ==========================================
+int main() {
+    // Data sesuai dengan contoh di infografis
+    vector<int> linearData = {4, 8, 7, 2, 9, 1};
+    vector<int> binaryData = {1, 3, 5, 7, 9, 11, 13};
+    vector<int> jumpData   = {1, 3, 5, 7, 9, 11, 13, 15, 17};
+
+    int target = 7;
+
+    cout << "===========================================\n";
+    cout << "   SIMULASI ALGORITMA PENCARIAN (C++)\n";
+    cout << "===========================================\n";
+
+    // 1. Uji Pencarian Linier
+    int hasilLinear = linearSearch(linearData, target);
+    if (hasilLinear != -1) {
+        cout << "=> Angka " << target << " ditemukan pada indeks " << hasilLinear << ".\n";
+    } else {
+        cout << "=> Angka " << target << " tidak ditemukan.\n";
+    }
+
+    // 2. Uji Pencarian Biner
+    int hasilBiner = binarySearch(binaryData, target);
+    if (hasilBiner != -1) {
+        cout << "=> Angka " << target << " ditemukan pada indeks " << hasilBiner << ".\n";
+    } else {
+        cout << "=> Angka " << target << " tidak ditemukan.\n";
+    }
+
+    // 3. Uji Pencarian Lompat
+    // Menggunakan jumpSize = 3 sesuai contoh di infografis
+    int hasilLompat = jumpSearch(jumpData, target, 3);
+    if (hasilLompat != -1) {
+        cout << "=> Angka " << target << " ditemukan pada indeks " << hasilLompat << ".\n";
+    } else {
+        cout << "=> Angka " << target << " tidak ditemukan.\n";
+    }
+
+    cout << "\n===========================================\n";
+    cout << "Selesai. Tekan enter untuk keluar...";
+    cin.get();
+    return 0;
+}
